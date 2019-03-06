@@ -117,7 +117,7 @@ export default class Amqp extends Broker {
     this.callback = (await this.channel.assertQueue('', { exclusive: true })).queue;
     this.channel.consume(this.callback, (msg) => {
       if (msg) this._responses.emit(msg.properties.correlationId, decode(msg.content));
-    }, { noAck: true });
+    }, { noAck: true, durable: false });
 
     await this.channel.assertExchange(this.group, 'direct');
     return connection;
