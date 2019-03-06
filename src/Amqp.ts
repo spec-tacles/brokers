@@ -114,12 +114,12 @@ export default class Amqp extends Broker {
     this.channel = await connection.createChannel();
 
     // setup RPC callback queue
-    this.callback = (await this.channel.assertQueue('', { exclusive: true })).queue;
+    this.callback = (await this.channel.assertQueue('', { exclusive: true, durable: false })).queue;
     this.channel.consume(this.callback, (msg) => {
       if (msg) this._responses.emit(msg.properties.correlationId, decode(msg.content));
     }, { noAck: true, durable: false });
 
-    await this.channel.assertExchange(this.group, 'direct');
+    await this.channel.assertExchange(this.group, 'direct', { durable: false });
     return connection;
   }
 
